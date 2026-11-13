@@ -313,8 +313,9 @@ export function Shell() {
               </nav>
             </div>
             <div className="px-5 py-4 text-xs text-muted-foreground shadow-[var(--gui-divider-top-shadow)] lg:px-8">
-              <div className="mx-auto max-w-[1360px]">
-                © {new Date().getFullYear()} DoRoboty.ai — od Superhero.tech
+              <div className="mx-auto flex max-w-[1360px] flex-wrap justify-between gap-x-6 gap-y-2">
+                <span>© {new Date().getFullYear()} DoRoboty.ai — od Superhero.tech</span>
+                <span>Problem z aplikacją? Zgłoś go na kanale kursu.</span>
               </div>
             </div>
           </footer>
