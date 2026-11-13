@@ -67,7 +67,7 @@ const employerNav = [
   ["/app/organizacja", "Organizacja", Building2],
 ] as const;
 export function Shell() {
-  const { state, issue, error, clearError } = usePrototype();
+  const { state, issue, error, outdated, clearError } = usePrototype();
   const person = currentPerson(state);
   const { pathname } = useLocation();
   const workspace = pathname.startsWith("/app") && person;
@@ -91,6 +91,15 @@ export function Shell() {
   const content = (
     <>
       <>
+        {outdated && (
+          <Notice>
+            Dane zmieniły się w innej karcie. Zmiany z tej karty nie będą zapisywane, dopóki jej nie
+            odświeżysz.{" "}
+            <button type="button" className="underline" onClick={() => window.location.reload()}>
+              Odśwież stronę
+            </button>
+          </Notice>
+        )}
         {issue && (
           <Notice>
             {issue}{" "}

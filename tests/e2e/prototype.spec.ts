@@ -251,6 +251,32 @@ test("storage denial keeps the app usable and offers export", async ({ page }) =
   await page.goto("/#/app/profil");
   await expect(page.getByLabel("Imię i nazwisko")).toHaveValue("Anna Kowalska");
 });
+test("a save from another tab is not silently overwritten by an older tab", async ({
+  page,
+  context,
+}) => {
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/app/profil");
+  const other = await context.newPage();
+  await other.goto("/#/app/profil");
+  await other.getByLabel("Imię i nazwisko").fill("Anna z drugiej karty");
+  await other.getByRole("button", { name: "Zapisz profil", exact: true }).click();
+  const newer = await other.evaluate((key) => localStorage.getItem(key), STORAGE_KEY);
+  expect(newer).toContain("Anna z drugiej karty");
+
+  await expect(
+    page.getByText("Dane zmieniły się w innej karcie. Zmiany z tej karty"),
+  ).toBeVisible();
+  await page.getByLabel("Imię i nazwisko").fill("Anna z pierwszej karty");
+  await page.getByRole("button", { name: "Zapisz profil", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText("Odśwież stronę");
+  await expect(page.getByLabel("Imię i nazwisko")).toHaveValue("Anna z pierwszej karty");
+  expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBe(newer);
+
+  await page.getByRole("button", { name: "Odśwież stronę", exact: true }).click();
+  await expect(page.getByLabel("Imię i nazwisko")).toHaveValue("Anna z drugiej karty");
+  await expect(page.getByText("Dane zmieniły się w innej karcie")).toHaveCount(0);
+});
 test("map, hash deep links and unknown records work without external requests", async ({
   page,
 }) => {

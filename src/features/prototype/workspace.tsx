@@ -50,7 +50,7 @@ export function PersonPicker() {
             <Button
               variant="outline"
               onClick={() => {
-                run({ type: "select_person", id: person.id });
+                if (!run({ type: "select_person", id: person.id })) return;
                 navigate(
                   person.role === "candidate"
                     ? (safeNext ?? "/app")
