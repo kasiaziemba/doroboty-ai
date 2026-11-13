@@ -36,6 +36,6 @@ npm run preview
 ./scripts/verify
 ```
 
-The static output is dist/. After publishing it, walk through the [release smoke check](docs/RELEASE_SMOKE_CHECK.md) at the real address. Browser checks require an already provisioned Playwright Chromium; starting the app never installs it. See [participant guide](docs/PARTICIPANT_GUIDE.md), [architecture](docs/architecture.md), [current features](FEATURES.md) and [case protocol](docs/case/CASE_PROTOCOL.md).
+The static output is dist/. After publishing it, walk through the [release smoke check](docs/RELEASE_SMOKE_CHECK.md) at the real address. If the published app breaks, follow [incident response](docs/INCIDENT_RESPONSE.md). Browser checks require an already provisioned Playwright Chromium; starting the app never installs it. See [participant guide](docs/PARTICIPANT_GUIDE.md), [architecture](docs/architecture.md), [current features](FEATURES.md) and [case protocol](docs/case/CASE_PROTOCOL.md).
 
 To distribute a baseline participant package, run npm run package:participant -- /absolute/output/directory. This excludes Git history and instructor source material. Never distribute this repository’s history as a stage-safe packet.

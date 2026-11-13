@@ -99,6 +99,11 @@ export function SettingsPage() {
           Wybór osoby zastępuje logowanie. Propozycje AI, Match Score i podsumowania odtwarzają
           przygotowany scenariusz; nie oceniają kompetencji. Używaj przykładowych danych i CV.
         </p>
+        <p>
+          Problem z aplikacją? Zgłoś go na kanale kursu: opisz, co klikasz i co widzisz. Nie wklejaj
+          eksportu danych ani prawdziwych danych osobowych. Jeśli strona nie działa, uruchom
+          aplikację lokalnie (npm ci, npm run dev) i przenieś dane eksportem.
+        </p>
       </section>
       <ConfirmDialog
         open={pending !== null}

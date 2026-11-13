@@ -277,6 +277,15 @@ test("a save from another tab is not silently overwritten by an older tab", asyn
   await expect(page.getByLabel("Imię i nazwisko")).toHaveValue("Anna z drugiej karty");
   await expect(page.getByText("Dane zmieniły się w innej karcie")).toHaveCount(0);
 });
+test("public footer and settings tell users where to report problems", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("footer")).toContainText(
+    "Problem z aplikacją? Zgłoś go na kanale kursu.",
+  );
+  await choose(page, "Anna Kowalska");
+  await page.goto("/#/app/settings");
+  await expect(page.getByRole("main")).toContainText("Zgłoś go na kanale kursu");
+});
 test("map, hash deep links and unknown records work without external requests", async ({
   page,
 }) => {
