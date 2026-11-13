@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { initialState, transition, type Action, type State } from "./model";
-import { parseState, readState, saveState, type StoragePort } from "./storage";
+import { parseState, readState, saveState, STORAGE_KEY, type StoragePort } from "./storage";
+const OUTDATED_ERROR =
+  "Dane zmieniły się w innej karcie. Odśwież stronę, aby nie nadpisać nowszych zmian. Wpisany tekst skopiuj przed odświeżeniem.";
 function browserStorage(): StoragePort | null {
   try {
     return window.localStorage;
@@ -14,11 +16,21 @@ function useStore() {
   const [issue, setIssue] = useState(loaded.issue);
   const [error, setError] = useState("");
   const [blocked, setBlocked] = useState(loaded.blocked);
+  // Another tab saved or cleared the scenario; saving here would overwrite newer data.
+  const [outdated, setOutdated] = useState(false);
   const latest = useRef(state);
+  useEffect(() => {
+    function onStorage(event: StorageEvent) {
+      if (event.key === STORAGE_KEY || event.key === null) setOutdated(true);
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
   function commit(next: State, replace = false) {
     latest.current = next;
     setState(next);
     setError("");
+    if (replace) setOutdated(false);
     if (blocked && !replace) return;
     try {
       saveState(browserStorage(), next);
@@ -29,6 +41,10 @@ function useStore() {
     }
   }
   function run(action: Action) {
+    if (outdated) {
+      setError(OUTDATED_ERROR);
+      return false;
+    }
     try {
       commit(transition(latest.current, action));
       return true;
@@ -59,6 +75,7 @@ function useStore() {
     issue,
     error,
     blocked,
+    outdated,
     original: loaded.original,
     run,
     importState,
