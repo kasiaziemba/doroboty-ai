@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { ConsentSettingsButton } from "./consent-banner";
 import { usePrototype } from "./store";
 import { serializeState, MAX_IMPORT_BYTES } from "./storage";
 import { PageTitle } from "./shell";
@@ -133,6 +134,20 @@ export function PrivacyPage() {
           ich do bazy, dostawcy AI ani systemu analitycznego. Plik eksportu zawiera cały lokalny
           scenariusz, w tym notatki.
         </p>
+        <h2 className="pt-3">Pliki cookie i analityka</h2>
+        <p>
+          Opublikowana wersja strony pyta o zgodę na analitykę. Po jej udzieleniu narzędzie PostHog
+          (serwery w UE) zapisuje w przeglądarce anonimowy identyfikator w pliku cookie i pamięci
+          lokalnej oraz zbiera odsłony, kliknięcia, czas opuszczenia strony i jej szybkość. Nie
+          zbiera treści wpisywanych w formularze, nagrań ekranu ani danych scenariusza.
+        </p>
+        <p>
+          Bez zgody strona nie ładuje PostHoga i nic nie wysyła; zapisuje tylko Twoją decyzję.
+          Wycofanie zgody wyłącza analitykę i usuwa identyfikator z przeglądarki. Decyzję zmienisz w
+          każdej chwili przyciskiem „Ustawienia cookies” w stopce. W uruchomieniu lokalnym analityka
+          jest wyłączona.
+        </p>
+        <ConsentSettingsButton className={buttonVariants({ variant: "outline" })} />
         <p>
           Możesz usunąć zmiany przyciskiem „Resetuj scenariusz” w ustawieniach lub wyczyścić dane
           witryny w przeglądarce. Hosting może prowadzić własne logi dostępu.

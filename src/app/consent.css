@@ -1,0 +1,72 @@
+/* Cookie/analytics consent banner (host extension).
+   Composes the outlined white surface (r24, one ink contour), Geist Serif
+   heading and existing Button variants. Non-modal and fixed to the bottom:
+   the reserved space below keeps content and focused controls uncovered.
+   z-index sits above the workspace sidebar (20) and below dialogs (50). */
+:root {
+  scroll-padding-bottom: var(--consent-banner-space, 0px);
+}
+body {
+  padding-bottom: var(--consent-banner-space, 0px);
+}
+.consent-banner {
+  position: fixed;
+  z-index: 40;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  display: grid;
+  gap: 12px;
+  max-width: 720px;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  margin-inline: auto;
+  padding: 24px;
+  background: #fff;
+  color: var(--foreground);
+  border: 1px solid var(--foreground);
+  border-radius: 24px;
+  outline: none;
+}
+.consent-banner:focus-visible {
+  outline: 2px solid var(--gui-focus);
+  outline-offset: 2px;
+}
+.consent-banner h2 {
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+.consent-banner p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.consent-banner a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.consent-banner__state {
+  font-weight: 600;
+}
+.consent-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+@media (max-width: 600px) {
+  .consent-banner {
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    max-height: calc(100dvh - 16px);
+    padding: 20px;
+  }
+  .consent-banner h2 {
+    font-size: 22px;
+  }
+  .consent-banner__actions > * {
+    flex: 1 1 auto;
+  }
+}
