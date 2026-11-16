@@ -19,6 +19,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { currentPerson } from "./model";
 import { usePrototype } from "./store";
 import { ConsentBanner, ConsentSettingsButton } from "./consent-banner";
+import { useTrackPageviews } from "./consent";
 import { cn } from "@/lib/utils";
 const navigation = [
   { to: "/oferty", label: "Oferty" },
@@ -69,6 +70,7 @@ const employerNav = [
 ] as const;
 export function Shell() {
   const { state, issue, error, outdated, clearError } = usePrototype();
+  useTrackPageviews();
   const person = currentPerson(state);
   const { pathname } = useLocation();
   const workspace = pathname.startsWith("/app") && person;

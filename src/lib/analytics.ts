@@ -52,6 +52,9 @@ function readConsent(): Consent | null {
 
 let started = false;
 let reopened = false;
+// URL of the last pageview sent, so a re-render or a repeated route effect
+// does not count the same screen twice.
+let lastPageview: string | null = null;
 let snapshot: ConsentSnapshot = { mode: "off", consent: null, open: false };
 const listeners = new Set<() => void>();
 
@@ -83,9 +86,12 @@ function apply(consent: Consent | null) {
       started = true;
       posthog.init(POSTHOG_KEY, {
         api_host: POSTHOG_HOST,
-        // 2025-05-24 defaults record a pageview on every history change,
-        // which covers the hash routes, plus pageleave and autocapture.
         defaults: "2025-05-24",
+        // PostHog's own history tracking compares only the pathname, which is
+        // always "/" under HashRouter. The app sends $pageview itself on every
+        // route change (trackPageview); pageleave stays on explicitly.
+        capture_pageview: false,
+        capture_pageleave: true,
         person_profiles: "identified_only",
         // Forms hold free text. Autocapture never sends input values, and
         // session replay stays off so typed text is not recorded either.
@@ -96,8 +102,11 @@ function apply(consent: Consent | null) {
     } else {
       posthog.opt_in_capturing();
     }
+    // Count the screen the visitor is on when consent arrives.
+    trackPageview();
   } else if (consent === "denied") {
     if (started) posthog.opt_out_capturing();
+    lastPageview = null;
     clearPosthogStorage();
   }
 }
@@ -115,6 +124,18 @@ export function initAnalytics(): void {
     refresh();
     apply(snapshot.consent);
   });
+}
+
+/**
+ * Sends a $pageview for the current URL (including the hash route) once
+ * PostHog runs with consent. Called on every route change by the Shell.
+ */
+export function trackPageview(): void {
+  if (!started || readConsent() !== "granted") return;
+  const href = window.location.href;
+  if (href === lastPageview) return;
+  lastPageview = href;
+  posthog.capture("$pageview");
 }
 
 export function setConsent(consent: Consent): void {
