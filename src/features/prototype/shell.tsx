@@ -18,6 +18,7 @@ import { BrandMark } from "@/features/public/brand-mark";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { currentPerson } from "./model";
 import { usePrototype } from "./store";
+import { ConsentBanner, ConsentSettingsButton } from "./consent-banner";
 import { cn } from "@/lib/utils";
 const navigation = [
   { to: "/oferty", label: "Oferty" },
@@ -307,6 +308,7 @@ export function Shell() {
                 <Link to="/oferty">Oferty</Link>
                 <Link to="/metodologia">Metodologia</Link>
                 <Link to="/polityka-prywatnosci">Prywatność</Link>
+                <ConsentSettingsButton />
                 <Link className="inline-flex items-center gap-1" to="/auth/sign-in">
                   Strefa case <ArrowUpRight className="size-4" />
                 </Link>
@@ -321,6 +323,7 @@ export function Shell() {
           </footer>
         </>
       )}
+      <ConsentBanner />
     </div>
   );
 }

@@ -1030,3 +1030,67 @@ test("candidate snapshot supports custom CV and long content at desktop and mobi
     record.answer,
   );
 });
+
+test("local runs show no consent UI and send nothing to PostHog", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Pliki cookie i analityka" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Ustawienia cookies" })).toHaveCount(0);
+});
+
+test("cookie banner asks for consent, remembers the decision and can be reopened", async ({
+  page,
+}) => {
+  const posthog: string[] = [];
+  page.on("request", (r) => {
+    if (r.url().includes("posthog")) posthog.push(r.url());
+  });
+  await page.addInitScript(() => localStorage.setItem("doroboty.analytics.preview", "1"));
+  const consent = () => page.evaluate(() => localStorage.getItem("doroboty.analytics.consent"));
+  await page.goto("/");
+  const banner = page.getByRole("region", { name: "Pliki cookie i analityka" });
+  await expect(banner).toBeVisible();
+  await expect(banner).not.toBeFocused();
+  await expect(banner.getByRole("link", { name: "Więcej o prywatności" })).toHaveAttribute(
+    "href",
+    "#/polityka-prywatnosci",
+  );
+  const results = await new AxeBuilder({ page })
+    .include(".consent-banner")
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
+  expect(results.violations).toEqual([]);
+
+  await banner.getByRole("button", { name: "Odrzucam", exact: true }).click();
+  await expect(banner).toBeHidden();
+  expect(await consent()).toBe("denied");
+  await expect(page.locator("#main")).toBeFocused();
+  await page.reload();
+  await expect(banner).toBeHidden();
+
+  const settings = page
+    .getByRole("contentinfo")
+    .getByRole("button", { name: "Ustawienia cookies", exact: true });
+  await settings.click();
+  await expect(banner).toBeFocused();
+  await expect(banner).toContainText("Obecnie: zgoda odrzucona.");
+  await banner.getByRole("button", { name: "Akceptuję", exact: true }).click();
+  await expect(banner).toBeHidden();
+  await expect(settings).toBeFocused();
+  expect(await consent()).toBe("granted");
+
+  await page.setViewportSize({ width: 320, height: 640 });
+  await settings.click();
+  await expect(banner).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  const space = await page.evaluate(() => getComputedStyle(document.body).paddingBottom);
+  expect(parseFloat(space)).toBeGreaterThan(0);
+  await banner.getByRole("button", { name: "Akceptuję", exact: true }).click();
+
+  await page.goto("/#/polityka-prywatnosci");
+  await expect(page.getByRole("heading", { name: "Pliki cookie i analityka" })).toBeVisible();
+  await expect(
+    page.getByRole("main").getByRole("button", { name: "Ustawienia cookies" }),
+  ).toBeVisible();
+  expect(posthog).toEqual([]);
+});
