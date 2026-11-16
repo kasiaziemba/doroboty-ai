@@ -87,4 +87,4 @@ Stable IDs are retained, including explicit removed entries. The legacy duplicat
 
 ## Current implementation limits
 
-No real login, email, binary upload, production CVs, provider AI, confidential roles, backend, collaboration across devices, cloud analytics or live experiment measurement. A static URL shares code, not local state; exported JSON contains the entire scenario. Human testing, publishing, CI results and course approval must be verified separately.
+No real login, email, binary upload, production CVs, provider AI, confidential roles, backend, collaboration across devices or live experiment measurement. The published site sends anonymous PostHog browser analytics (pageviews on every hash route change, pageleave, autocapture clicks; no input values, no session replay, no person profiles) to the EU project; `src/lib/analytics.ts` skips localhost, 127.0.0.1 and automated browsers, so local runs and tests send nothing. A static URL shares code, not local state; exported JSON contains the entire scenario. Human testing, publishing, CI results and course approval must be verified separately.
