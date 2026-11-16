@@ -1,5 +1,11 @@
-import { useSyncExternalStore } from "react";
-import { getConsentSnapshot, openConsentSettings, subscribeConsent } from "@/lib/analytics";
+import { useEffect, useSyncExternalStore } from "react";
+import { useLocation } from "react-router";
+import {
+  getConsentSnapshot,
+  openConsentSettings,
+  subscribeConsent,
+  trackPageview,
+} from "@/lib/analytics";
 
 export function useConsent() {
   return useSyncExternalStore(subscribeConsent, getConsentSnapshot, getConsentSnapshot);
@@ -23,4 +29,15 @@ export function takeReopenTrigger() {
   const trigger = reopenTrigger;
   reopenTrigger = null;
   return trigger;
+}
+
+/**
+ * Sends a pageview whenever the hash route (path or query) changes. In-page
+ * section hashes such as #employer are not separate screens and are ignored.
+ */
+export function useTrackPageviews() {
+  const { pathname, search } = useLocation();
+  useEffect(() => {
+    trackPageview();
+  }, [pathname, search]);
 }

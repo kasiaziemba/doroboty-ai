@@ -9,7 +9,7 @@ Collect browser events from the published site (doroboty-ai-4975.netlify.app) in
 ## Changes
 
 - `posthog-js` dependency; `src/lib/analytics.ts` initialises it from `src/main.tsx`.
-- Defaults `2025-05-24`: pageview on each history change (hash routes), pageleave, autocapture. Person profiles only after `identify` (never called). Session replay disabled.
+- Defaults `2025-05-24`: pageleave, autocapture. Correction (2026-11-16): the defaults' history pageviews compare only the pathname, so hash routes were not counted; fixed in `hash-pageviews.md`. Person profiles only after `identify` (never called). Session replay disabled.
 - No init on localhost, 127.0.0.1, [::1] or when `navigator.webdriver` is set, so `npm run dev`, previews and Playwright send nothing.
 - FEATURES.md: "Current implementation limits" now describes the analytics.
 
